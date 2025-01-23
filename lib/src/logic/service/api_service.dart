@@ -5,13 +5,37 @@ class ApiService {
       Dio(BaseOptions(baseUrl: 'https://jsonplaceholder.typicode.com'));
 
   Future<List<dynamic>> fetchAlbums() async {
-    final response = await _dio.get('/albums');
-    return response.data;
+    try {
+      final response = await _dio.get('/albums');
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw ApiException('Failed to fetch albums: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      throw ApiException('Network error while fetching albums: ${e.message}');
+    }
   }
 
   Future<List<dynamic>> fetchPhotos(int albumId) async {
-    final response =
-        await _dio.get('/photos', queryParameters: {'albumId': albumId});
-    return response.data;
+    try {
+      final response =
+          await _dio.get('/photos', queryParameters: {'albumId': albumId});
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw ApiException('Failed to fetch photos: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      throw ApiException('Network error while fetching photos: ${e.message}');
+    }
   }
+}
+
+class ApiException implements Exception {
+  final String message;
+  ApiException(this.message);
+
+  @override
+  String toString() => message;
 }

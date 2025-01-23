@@ -10,10 +10,6 @@ class AlbumsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AlbumCubit, AlbumState>(
       builder: (context, state) {
-        if (state is AlbumInitialState) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
         if (state is AlbumsLoadedState) {
           return ListView.builder(
             itemBuilder: (context, index) {
@@ -32,7 +28,11 @@ class AlbumsWidget extends StatelessWidget {
           );
         }
 
-        return const Center(child: Text("Failed to load albums"));
+        if (state is AlbumsErrorState) {
+          return Center(child: Text(state.message));
+        }
+
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
